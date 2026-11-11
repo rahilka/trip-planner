@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useRunStore } from '../stores/run';
+import { DEMOS } from '../demos';
 
 const run = useRunStore();
 const ACTS: Record<number, string> = {
@@ -20,10 +21,10 @@ const openCompare = () =>
 async function loadRecordings() {
   try {
     recordings.value = await (await fetch('/api/recordings')).json();
-    if (!selectedRecording.value) selectedRecording.value = recordings.value[0]?.file ?? '';
   } catch {
-    recordings.value = [];
+    recordings.value = DEMOS; // no server: the demos bundled into the web app
   }
+  if (!selectedRecording.value) selectedRecording.value = recordings.value[0]?.file ?? '';
 }
 onMounted(loadRecordings);
 watch(() => run.running, (running) => !running && loadRecordings());
@@ -49,7 +50,7 @@ watch(() => run.running, (running) => !running && loadRecordings());
     <input v-model="run.prompt" class="prompt" :disabled="run.running" />
 
     <div class="controls">
-      <button class="primary" :disabled="run.running" @click="run.start()">▶ Run</button>
+      <button class="primary" :disabled="run.running || run.liveAvailable === false" :title="run.liveAvailable === false ? 'Live runs need the server and an API key: replay a recording instead' : ''" @click="run.start()">▶ Run</button>
       <button :disabled="!run.running || !run.stepMode || run.mode !== 'live'" @click="run.step()">⏭ Step</button>
       <select v-model="selectedRecording" :disabled="run.running" title="Saved runs">
         <option v-for="r in recordings" :key="r.file" :value="r.file">{{ r.file.replace('.jsonl', '') }}</option>

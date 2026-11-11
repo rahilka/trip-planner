@@ -2,17 +2,23 @@
 // "📂 Where is this in the code?": a few hand-picked spots, each with a one-line why.
 // The code itself stays folded until you ask for it, so the panel never turns into a wall of file names.
 import { reactive, watch } from 'vue';
+import type { CodeSpot } from '@glass-box/shared/codeSpots';
+import { loadBundledSpot } from '../../demos';
 
-type Spot = { key: string; title: string; why: string; file: string; line: number; snippet: string; absolutePath: string };
+/** absolutePath is only known when the server sent the spot (it powers the "Open in VS Code" link). */
+type Spot = CodeSpot & { absolutePath?: string };
 
 const props = defineProps<{ keys: string[]; compact?: boolean }>();
 const spots = reactive<Record<string, Spot | null>>({});
 const open = reactive<Record<string, boolean>>({});
 
 // Spots rarely change while the page is open: fetch each one once.
+// No server (replay-only mode)? Use the copy of the source bundled into the web app.
 const cache = new Map<string, Promise<Spot | null>>();
+const fromServer = (key: string): Promise<Spot | null> =>
+  fetch(`/api/code/${key}`).then((r) => (r.ok ? r.json() : null)).catch(() => null);
 const load = (key: string) => {
-  if (!cache.has(key)) cache.set(key, fetch(`/api/code/${key}`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+  if (!cache.has(key)) cache.set(key, fromServer(key).then(async (spot) => spot ?? (await loadBundledSpot(key)) ?? null));
   return cache.get(key)!;
 };
 watch(
@@ -22,7 +28,7 @@ watch(
 );
 
 /** Opens the file at that line in VS Code (works on the presenter's machine). */
-const vscodeLink = (s: Spot) => `vscode://file/${s.absolutePath.replace(/\\/g, '/')}:${s.line}`;
+const vscodeLink = (s: Spot) => `vscode://file/${s.absolutePath!.replace(/\\/g, '/')}:${s.line}`;
 const numbered = (s: Spot) => s.snippet.split('\n').map((text, i) => ({ n: s.line + i, text }));
 </script>
 
@@ -39,7 +45,7 @@ const numbered = (s: Spot) => s.snippet.split('\n').map((text, i) => ({ n: s.lin
         <div v-if="open[key]" class="code">
           <div class="path">
             <span>{{ spots[key]!.file }}</span>
-            <a :href="vscodeLink(spots[key]!)" title="Open this line in VS Code">Open in VS Code ↗</a>
+            <a v-if="spots[key]!.absolutePath" :href="vscodeLink(spots[key]!)" title="Open this line in VS Code">Open in VS Code ↗</a>
           </div>
           <pre><code><span v-for="l in numbered(spots[key]!)" :key="l.n" class="line"><i>{{ l.n }}</i>{{ l.text }}
 </span></code></pre>

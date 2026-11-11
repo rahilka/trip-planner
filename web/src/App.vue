@@ -33,6 +33,8 @@ if (embed || !full) run.autoOpenItinerary = false;
 if (params.get('coda') === '1') run.showClosing = true;
 if (params.get('speed')) run.speed = Number(params.get('speed'));
 if (replayFile && !compare.length) void run.replay(replayFile);
+// Live runs need the server and an API key. Without them the app offers recordings only.
+if (!compare.length) void run.checkLive();
 
 // Every animation reads --speed, so the speed slider slows or speeds up the whole show.
 const rootStyle = computed(() => ({ '--speed': String(run.speed) }));

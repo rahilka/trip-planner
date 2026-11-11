@@ -4,6 +4,7 @@ import { useContextStore } from './context';
 import { useTimelineStore } from './timeline';
 import { useGraphStore } from './graph';
 import { useFlowStore } from './flow';
+import { loadBundledRecording } from '../demos';
 
 export type Phase = 'think' | 'act' | 'observe' | 'done' | null;
 export type AgentStatus = 'idle' | 'thinking' | 'acting' | 'waiting' | 'done';
@@ -47,6 +48,9 @@ export const useRunStore = defineStore('run', {
     promptOnlyBudget: false,
     /** Playback speed. Every animation duration is divided by this. */
     speed: 1,
+
+    /** Can we run the agent live? Only if the server is up AND has an API key. Otherwise: replay-only mode. */
+    liveAvailable: undefined as boolean | undefined,
 
     runId: '' as string,
     mode: 'idle' as 'idle' | 'live' | 'replay',
@@ -95,6 +99,16 @@ export const useRunStore = defineStore('run', {
   },
 
   actions: {
+    /** Asks the server whether live runs are possible. No server (static hosting) or no key → replay-only. */
+    async checkLive() {
+      try {
+        const res = await fetch('/api/health');
+        this.liveAvailable = res.ok && Boolean((await res.json()).live);
+      } catch {
+        this.liveAvailable = false;
+      }
+    },
+
     reset() {
       source?.close();
       clearTimeout(replayTimer);
@@ -202,8 +216,19 @@ export const useRunStore = defineStore('run', {
       this.mode = 'replay';
       this.running = true;
       this.paused = false;
-      const text = await (await fetch(`/api/recordings/${encodeURIComponent(file)}`)).text();
+      // The curated demos ship inside the web app (no server needed); other recordings come from the server.
+      let text = await loadBundledRecording(file);
+      if (text === undefined) {
+        const res = await fetch(`/api/recordings/${encodeURIComponent(file)}`).catch(() => undefined);
+        if (!res?.ok) {
+          this.error = `Could not load the recording “${file}”.`;
+          this.running = false;
+          return;
+        }
+        text = await res.text();
+      }
       replayEvents = text.split('\n').filter(Boolean).map((line) => JSON.parse(line) as StreamedEvent);
+      this.prompt = replayEvents.find((e) => e.type === 'run_started')?.prompt ?? this.prompt;
       replayIndex = 0;
       this.playNext();
     },

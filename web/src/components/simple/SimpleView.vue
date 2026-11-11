@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // The simple view: type a prompt, press Run, watch the agent's decisions appear as a flowchart.
-import { computed, nextTick, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { VueFlow, useVueFlow, type NodeMouseEvent } from '@vue-flow/core';
 import { Background } from '@vue-flow/background';
 import { Controls } from '@vue-flow/controls';
@@ -21,6 +21,7 @@ import LearnSheet from './LearnSheet.vue';
 import HeroLoop from './HeroLoop.vue';
 import DecisionSheet from './DecisionSheet.vue';
 import { openLearn } from '../../learn';
+import { DEMOS } from '../../demos';
 
 const run = useRunStore();
 const flow = useFlowStore();
@@ -90,8 +91,20 @@ function toggleExplain() {
 }
 const onNodeClick = ({ node }: NodeMouseEvent) => (flow.selectedId = node.id);
 
+// ---------- Recordings ----------
+// Real runs saved earlier. Watching one never calls the model, so it needs no server and no API key.
+// Replay-only mode: the server is not there, or has no key. Then recordings are all we offer.
+const replayOnly = computed(() => run.liveAvailable === false);
+const selectedDemo = ref(DEMOS[0].file);
+const playDemo = () => void run.replay(selectedDemo.value);
+/** Live mode: picking from the 📼 menu plays it straight away, then the menu resets to its title. */
+function pickRecording(event: Event) {
+  const select = event.target as HTMLSelectElement;
+  if (select.value) void run.replay(select.value);
+  select.value = '';
+}
+
 // ---------- Teaching pace ----------
-// (Saved runs can still be replayed with ?replay=<file>.jsonl in the URL.)
 const replaying = computed(() => run.mode === 'replay' && run.running);
 const liveStepping = computed(() => run.mode === 'live' && run.running && run.stepMode);
 
@@ -99,8 +112,12 @@ const liveStepping = computed(() => run.mode === 'live' && run.running && run.st
 const status = computed(() => {
   if (run.error) return `⚠ ${run.error}`;
   if (run.pendingApproval) return '🛡 Waiting for your approval…';
-  if (run.stopped) return run.running ? '⏹ Stopping…' : '⏹ Stopped by you. Press ▶ Run to start again.';
-  if (!run.running) return run.totalTokens ? `✓ Done in ${(run.durationMs / 1000).toFixed(1)} s · ${run.totalTokens.toLocaleString()} tokens` : 'Ready.';
+  const again = replayOnly.value ? '▶ Play' : '▶ Run';
+  if (run.stopped) return run.running ? '⏹ Stopping…' : `⏹ Stopped by you. Press ${again} to start again.`;
+  if (!run.running) {
+    if (run.totalTokens) return `✓ Done in ${(run.durationMs / 1000).toFixed(1)} s · ${run.totalTokens.toLocaleString()} tokens`;
+    return replayOnly.value ? '📼 Replay mode: pick a recorded run and press ▶ Play (no API key needed).' : 'Ready.';
+  }
   if (replaying.value) return run.paused ? '⏸ Paused: press ⏭ to go one step further' : '📼 Replaying a saved run';
   if (liveStepping.value) return run.waitingForStep ? '⏸ Waiting for you: press ⏭ Next turn' : '🐢 Step mode: working… (the button lights up when it is your turn)';
   return '● Live';
@@ -111,14 +128,28 @@ const status = computed(() => {
   <div class="simple">
     <header>
       <div class="brand">🤖 Agent <span>Glass Box</span></div>
-      <select v-model.number="run.act" :disabled="run.running" title="What the agent is allowed to use">
-        <option v-for="a in ACTS" :key="a.n" :value="a.n">{{ a.label }}</option>
-      </select>
-      <input v-model="run.prompt" class="prompt" :disabled="run.running" @keydown.enter="!run.running && run.start()" />
-      <button v-if="!run.running" class="run" @click="run.start()">▶ Run</button>
+      <!-- Replay-only: choose a recorded run. Live: choose what the agent may use, and type a task. -->
+      <template v-if="replayOnly">
+        <select v-model="selectedDemo" :disabled="run.running" title="A real run, recorded earlier">
+          <option v-for="d in DEMOS" :key="d.file" :value="d.file">📼 {{ d.label }}</option>
+        </select>
+        <input :value="run.mode === 'replay' ? run.prompt : 'The task is in the recording: press ▶ Play'" class="prompt" disabled />
+      </template>
+      <template v-else>
+        <select v-model.number="run.act" :disabled="run.running" title="What the agent is allowed to use">
+          <option v-for="a in ACTS" :key="a.n" :value="a.n">{{ a.label }}</option>
+        </select>
+        <input v-model="run.prompt" class="prompt" :disabled="run.running" @keydown.enter="!run.running && run.start()" />
+      </template>
+      <button v-if="!run.running && replayOnly" class="run" @click="playDemo">▶ Play</button>
+      <button v-else-if="!run.running" class="run" @click="run.start()">▶ Run</button>
       <button v-else class="stop" :disabled="run.stopped" title="Stop the agent: no new turns, the model call in flight is cancelled" @click="run.stop()">
         ⏹ {{ run.stopped ? 'Stopping…' : 'Stop' }}
       </button>
+      <select v-if="!replayOnly" class="recordings" :disabled="run.running" title="Watch a run recorded earlier (no model calls)" @change="pickRecording">
+        <option value="">📼 Recordings…</option>
+        <option v-for="d in DEMOS" :key="d.file" :value="d.file">{{ d.label }}</option>
+      </select>
       <button class="learn" title="What is an agent, a tool, MCP…? Everyday analogies and comparisons" @click="openLearn()">📚 Learn</button>
     </header>
 
@@ -130,7 +161,7 @@ const status = computed(() => {
       </div>
       <label class="toggle"><input type="checkbox" :checked="flow.showExplain" @change="toggleExplain" /> 💡 Explain</label>
       <label class="toggle"><input type="checkbox" :checked="flow.expandSubagents" @change="toggleSubagents" /> 🔍 Inside subagents</label>
-      <label class="toggle" title="Live runs: pause before every model call">
+      <label v-if="!replayOnly" class="toggle" title="Live runs: pause before every model call">
         <input v-model="run.stepMode" type="checkbox" :disabled="run.running" /> 🐢 Step by step
       </label>
 
@@ -173,11 +204,15 @@ const status = computed(() => {
       <div v-if="!flow.nodes.length" class="hero">
         <div class="kicker">A live look inside an AI agent</div>
         <h1>See every decision an AI agent makes.</h1>
-        <p class="lead">Give it a task, press <b>▶ Run</b>, and watch it decide what to do next, which tools to use, and when it’s done.</p>
+        <p v-if="replayOnly" class="lead">
+          Pick a recorded run, press <b>▶ Play</b>, and watch it decide what to do next, which tools to use, and when it’s done.
+          These are real runs, saved earlier: no API key needed.
+        </p>
+        <p v-else class="lead">Give it a task, press <b>▶ Run</b>, and watch it decide what to do next, which tools to use, and when it’s done.</p>
         <HeroLoop />
         <ol class="how">
-          <li><span>1</span><div>Pick an act</div><small>each one adds a new idea</small></li>
-          <li><span>2</span><div>Press <b>▶ Run</b></div><small>the agent starts working</small></li>
+          <li><span>1</span><div>Pick {{ replayOnly ? 'a recording' : 'an act' }}</div><small>each one adds a new idea</small></li>
+          <li><span>2</span><div>Press <b>{{ replayOnly ? '▶ Play' : '▶ Run' }}</b></div><small>{{ replayOnly ? 'pause or step through any time' : 'the agent starts working' }}</small></li>
           <li><span>3</span><div>Click <b>🔎 Why?</b></div><small>on any step, to see its reasoning</small></li>
         </ol>
         <button class="hero-learn" @click="openLearn('agent')">📚 New to agents? Start here: “an agent is like a travel agent at a desk…”</button>
@@ -213,6 +248,7 @@ header { display: flex; gap: 10px; align-items: center; padding: 12px 16px; back
 .hero-learn { margin-top: 10px; pointer-events: auto; border-radius: 999px; padding: 8px 16px; font-size: 14px; background: color-mix(in srgb, var(--c-skill) 14%, var(--panel)); border-color: color-mix(in srgb, var(--c-skill) 55%, transparent); }
 .prompt { flex: 1; min-width: 240px; font-size: 15px; padding: 9px 12px; border-radius: 10px; }
 header select { border-radius: 10px; padding: 8px 10px; }
+header select.recordings { color: var(--muted); }
 .run {
   padding: 9px 22px;
   font-size: 15px;

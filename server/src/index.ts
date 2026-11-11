@@ -8,6 +8,9 @@ import { getRun, startRun } from './runs.ts';
 const app = express();
 app.use(express.json());
 
+// Can this server run the agent live? Without an API key the web app switches to replay-only mode.
+app.get('/health', (_req, res) => res.json({ live: Boolean(process.env.ANTHROPIC_API_KEY) }));
+
 // Start a run. The agent works in the background; follow it via the SSE stream.
 app.post('/runs', (req, res) => {
   const body = req.body as StartRunRequest;

@@ -5,5 +5,8 @@
   "type": "module",
   "main": "src/events.ts",
   "types": "src/events.ts",
-  "exports": { ".": "./src/events.ts" }
+  "exports": {
+    ".": "./src/events.ts",
+    "./codeSpots": "./src/codeSpots.ts"
+  }
 }

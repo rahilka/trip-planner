@@ -6,7 +6,20 @@ The demo prompt used throughout the talk:
 
 > Plan me 4 days in Paris from Skopje in early December, budget €700.
 
-## Run it
+## Try it without an API key
+
+You can watch real recorded runs of every act, with no key and no agent server:
+
+```bash
+npm install
+npm run demo                  # web only, on http://localhost:5173
+```
+
+Pick a recording in the 📼 menu and press **▶ Play**. Pause, ⏭ step through, and click any box: it all works, because a recording is just the list of events a real run emitted, and the browser plays them back without calling the model.
+
+The app decides by itself: if the server isn't running, or has no `ANTHROPIC_API_KEY`, it switches to **replay mode** and offers only the recordings. The 9 curated `server/recordings/demo-*.jsonl` files and the "📂 Where is this in the code?" snippets are bundled into the web app (`web/src/demos.ts`), so `npm run build -w web` also gives you a static site that works on any static host.
+
+## Run it live
 
 Requirements: Node 20+ and an Anthropic API key.
 
@@ -99,7 +112,7 @@ mcp-travel-data/   standalone MCP server (stdio) with mock flights, hotels and a
 web/               Vue 3 + Pinia + Vue Flow; stores/run.ts ingests events, live or replayed
 ```
 
-HTTP API: `POST /runs`, `GET /runs/:id/events` (SSE), `POST /runs/:id/step`, `POST /runs/:id/approve`, `POST /runs/:id/stop`, `GET /code/:key`, `GET /recordings`, `GET /recordings/:file`.
+HTTP API: `GET /health` (live runs possible?), `POST /runs`, `GET /runs/:id/events` (SSE), `POST /runs/:id/step`, `POST /runs/:id/approve`, `POST /runs/:id/stop`, `GET /code/:key`, `GET /recordings`, `GET /recordings/:file`.
 
 ### Notes
 
@@ -136,7 +149,7 @@ I priced it at today's list prices: **Sonnet 5.5** at $2 per million input token
 - **They need their own API key** in `.env`, and the costs go on that key's account. It's sensible to **set a monthly spend limit** in the Anthropic Console, in case something loops or someone leaves it running.
 - **Acts 1 and 2 are almost free.** Acts 5 and 6 are the expensive ones.
 - **⏹ Stop** cancels a run straight away, so a mistaken run doesn't cost the full amount.
-- **For a group workshop,** a recording is free to watch: `?replay=demo-act6-budget-hook.jsonl` in the address shows the whole thing without calling the API at all.
+- **For a group workshop,** recordings are free to watch: pick one from the 📼 menu, or put `?replay=demo-act6-budget-hook.jsonl` in the address. No API call at all. Without a key at all, `npm run demo` is enough (see "Try it without an API key").
 
 To make it even cheaper, the next step would be **prompt caching**. The instructions and tool list are re-sent on every turn, and caching them would make that repeated part about 10× cheaper. It isn't switched on now, to keep `loop.ts` simple for the slide.
 
@@ -386,3 +399,4 @@ Vite **proxies `/api` to the server** (`web/vite.config.ts`), so the browser onl
   - MCP: `server.registerTool(...)` in `mcp-travel-data/src/index.ts`. The agent discovers it automatically on the next run.
 - **"Where is the 'decision'?"** In one place: the `anthropic.messages.create(...)` call in `loop.ts`. Everything after it just follows what the model replied.
 - **"How do I run it?"** Put `ANTHROPIC_API_KEY` in `.env`, then run `npm install` and `npm run dev` from the root, and open http://localhost:5173.
+
