@@ -400,3 +400,6 @@ Vite **proxies `/api` to the server** (`web/vite.config.ts`), so the browser onl
 - **"Where is the 'decision'?"** In one place: the `anthropic.messages.create(...)` call in `loop.ts`. Everything after it just follows what the model replied.
 - **"How do I run it?"** Put `ANTHROPIC_API_KEY` in `.env`, then run `npm install` and `npm run dev` from the root, and open http://localhost:5173.
 
+## License
+
+[MIT](LICENSE): use, copy, change and share it freely, as long as the copyright notice stays in.

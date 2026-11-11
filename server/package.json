@@ -2,6 +2,7 @@
   "name": "@glass-box/server",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "node --watch-path=src --watch-path=../shared/src --import tsx src/index.ts",

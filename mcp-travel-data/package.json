@@ -2,6 +2,7 @@
   "name": "@glass-box/mcp-travel-data",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Standalone MCP server (stdio) with mock flights, hotels and activities.",
   "scripts": {
