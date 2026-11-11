@@ -1,0 +1,19 @@
+{
+  "name": "agent-glass-box",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "mcp-travel-data",
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w server\" \"npm run dev -w web\"",
+    "typecheck": "npm run typecheck -w mcp-travel-data && npm run typecheck -w server && npm run typecheck -w web"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "typescript": "~5.9.3"
+  }
+}

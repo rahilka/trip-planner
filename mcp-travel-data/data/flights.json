@@ -1,0 +1,23 @@
+{
+  "_comment": "Mock schedules, repeated every day in early December. Prices vary a little by date. PLANTED: the route SKP-PAR has no flights on 12-01 (tool error), and the cheapest outbound lands at 02:10.",
+  "airports": {
+    "SKP": ["skp", "skopje"],
+    "PAR": ["par", "paris", "cdg", "ory", "bva", "beauvais"]
+  },
+  "unavailable": {
+    "SKP-PAR": ["12-01"]
+  },
+  "routes": {
+    "SKP-PAR": [
+      { "flight": "W6 4385", "carrier": "Wizz Air", "from": "SKP", "to": "BVA (Beauvais, 85 km from Paris)", "depart": "23:40", "arrive": "02:10", "arrivesNextDay": true, "stops": 0, "priceEur": 24 },
+      { "flight": "W6 4383", "carrier": "Wizz Air", "from": "SKP", "to": "BVA (Beauvais, 85 km from Paris)", "depart": "06:10", "arrive": "08:20", "arrivesNextDay": false, "stops": 0, "priceEur": 79 },
+      { "flight": "JU 131 + JU 360", "carrier": "Air Serbia", "from": "SKP", "to": "CDG", "depart": "05:50", "arrive": "10:55", "arrivesNextDay": false, "stops": 1, "via": "BEG", "priceEur": 189 },
+      { "flight": "OS 776 + OS 411", "carrier": "Austrian", "from": "SKP", "to": "CDG", "depart": "06:00", "arrive": "11:35", "arrivesNextDay": false, "stops": 1, "via": "VIE", "priceEur": 245 }
+    ],
+    "PAR-SKP": [
+      { "flight": "W6 4386", "carrier": "Wizz Air", "from": "BVA (Beauvais)", "to": "SKP", "depart": "09:05", "arrive": "12:55", "arrivesNextDay": false, "stops": 0, "priceEur": 65 },
+      { "flight": "W6 4384", "carrier": "Wizz Air", "from": "BVA (Beauvais)", "to": "SKP", "depart": "21:30", "arrive": "01:20", "arrivesNextDay": true, "stops": 0, "priceEur": 35 },
+      { "flight": "JU 361 + JU 130", "carrier": "Air Serbia", "from": "CDG", "to": "SKP", "depart": "12:40", "arrive": "19:25", "arrivesNextDay": false, "stops": 1, "via": "BEG", "priceEur": 175 }
+    ]
+  }
+}

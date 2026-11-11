@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+
+# Live runs are recorded with timestamps; only the curated demo-* fallbacks are committed.
+server/recordings/*.jsonl
+!server/recordings/demo-*.jsonl

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "travel-data": {
+      "command": "node",
+      "args": ["--import", "tsx", "mcp-travel-data/src/index.ts"]
+    }
+  }
+}

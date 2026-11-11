@@ -1,0 +1,20 @@
+{
+  "paris": [
+    { "name": "Louvre Museum", "category": "museum", "indoor": true, "priceEur": 22, "hours": 3, "notes": "Book a timed slot; closed Tuesdays" },
+    { "name": "Musée d'Orsay", "category": "museum", "indoor": true, "priceEur": 16, "hours": 2.5, "notes": "Impressionists; closed Mondays" },
+    { "name": "Centre Pompidou", "category": "museum", "indoor": true, "priceEur": 15, "hours": 2, "notes": "Modern art and a rooftop view" },
+    { "name": "Sainte-Chapelle", "category": "landmark", "indoor": true, "priceEur": 13, "hours": 1, "notes": "Stained glass; best on a bright day" },
+    { "name": "Catacombs of Paris", "category": "landmark", "indoor": true, "priceEur": 29, "hours": 1.5, "notes": "Underground, book ahead" },
+    { "name": "Passages couverts walk", "category": "walk", "indoor": true, "priceEur": 0, "hours": 1.5, "notes": "19th-century covered arcades, a perfect rainy-day stroll" },
+    { "name": "Galeries Lafayette dome and rooftop", "category": "shopping", "indoor": true, "priceEur": 0, "hours": 1, "notes": "Christmas tree under the dome" },
+    { "name": "Cooking class: French pastry", "category": "food", "indoor": true, "priceEur": 75, "hours": 2.5, "notes": "Small groups, in English" },
+    { "name": "Eiffel Tower summit", "category": "landmark", "indoor": false, "priceEur": 36, "hours": 2, "notes": "Windy and cold in December" },
+    { "name": "Trocadéro viewpoint at sunset", "category": "landmark", "indoor": false, "priceEur": 0, "hours": 1, "notes": "Free, the classic Eiffel photo" },
+    { "name": "Montmartre and Sacré-Cœur walk", "category": "walk", "indoor": false, "priceEur": 0, "hours": 2.5, "notes": "Hilly, slippery when wet" },
+    { "name": "Seine river cruise", "category": "tour", "indoor": false, "priceEur": 17, "hours": 1, "notes": "Covered boats, but you see more on deck" },
+    { "name": "Tuileries Christmas market", "category": "market", "indoor": false, "priceEur": 0, "hours": 1.5, "notes": "Mulled wine and stalls, evenings are best" },
+    { "name": "Le Marais food walk", "category": "food", "indoor": false, "priceEur": 45, "hours": 3, "notes": "Falafel, cheese, pastries" },
+    { "name": "Luxembourg Gardens", "category": "park", "indoor": false, "priceEur": 0, "hours": 1, "notes": "Quiet in winter" },
+    { "name": "Champs-Élysées Christmas lights", "category": "walk", "indoor": false, "priceEur": 0, "hours": 1, "notes": "After 17:00" }
+  ]
+}

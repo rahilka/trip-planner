@@ -1,0 +1,12 @@
+{
+  "paris": [
+    { "name": "Generator Paris", "type": "hostel (private room)", "area": "10th, near Gare du Nord", "pricePerNightEur": 45, "rating": 7.9, "notes": "Shared lounge, lively bar, metro 5 min" },
+    { "name": "Hôtel du Nord Est", "type": "hotel", "area": "10th, Canal Saint-Martin", "pricePerNightEur": 68, "rating": 7.6, "notes": "Small rooms, great canal-side cafés" },
+    { "name": "ibis budget Porte d'Italie", "type": "hotel", "area": "13th, edge of the city", "pricePerNightEur": 59, "rating": 7.1, "notes": "35 min by metro to the centre" },
+    { "name": "Hôtel Marais Bastille", "type": "hotel", "area": "11th, Bastille", "pricePerNightEur": 89, "rating": 8.2, "notes": "Walkable to the Marais and Notre-Dame" },
+    { "name": "Hôtel des Arts Montmartre", "type": "boutique hotel", "area": "18th, Montmartre", "pricePerNightEur": 105, "rating": 8.5, "notes": "Quiet street below Sacré-Cœur" },
+    { "name": "Hôtel Le Petit Latin", "type": "boutique hotel", "area": "5th, Latin Quarter", "pricePerNightEur": 132, "rating": 8.8, "notes": "Central, 5 min walk to the Seine" },
+    { "name": "Hôtel Rivoli Opéra", "type": "hotel", "area": "1st, Louvre", "pricePerNightEur": 178, "rating": 8.6, "notes": "Next to the Louvre and Tuileries" },
+    { "name": "Maison Saint-Germain", "type": "luxury hotel", "area": "6th, Saint-Germain", "pricePerNightEur": 220, "rating": 9.2, "notes": "Spa, breakfast included" }
+  ]
+}

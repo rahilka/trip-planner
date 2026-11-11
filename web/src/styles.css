@@ -1,0 +1,87 @@
+/* Dark, projector-friendly theme. Block colours are shared by every panel. */
+:root {
+  --bg: #0d0f14;
+  --panel: #151821;
+  --panel-2: #1c2030;
+  --border: #2a2f42;
+  --text: #e8eaf0;
+  --muted: #8a90a6;
+  --accent: #7c8cff;
+
+  --c-system: #9b87f5;
+  --c-user: #4ea1ff;
+  --c-assistant: #3ecf8e;
+  --c-tool_use: #f5a524;
+  --c-tool_result: #2cc7c7;
+  --c-skill: #ec6aa8;
+  --c-mcp: #22d3ee;
+  --c-error: #ef4444;
+  --c-wrong: #fb923c;
+  --c-hook: #a3e635;
+
+  /* Set from the speed slider. All animation durations divide by it. */
+  --speed: 1;
+  --t-fast: calc(250ms / var(--speed));
+  --t-med: calc(600ms / var(--speed));
+  --t-slow: calc(1200ms / var(--speed));
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #0d0f14; font-weight: 600; }
+input, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+pre, code { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-title {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chip {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
